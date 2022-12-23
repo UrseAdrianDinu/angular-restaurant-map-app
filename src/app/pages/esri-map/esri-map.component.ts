@@ -23,8 +23,9 @@ import {
 } from "@angular/core";
 import { setDefaultOptions, loadModules } from 'esri-loader';
 import esri = __esri; // Esri TypeScript Types
-import { Subscription } from "rxjs";
+import {Observable, Subscription } from "rxjs";
 import { FirebaseService, ITestItem } from "src/app/services/database/firebase";
+import {GeolocationService} from '@ng-web-apis/geolocation';
 import { FirebaseMockService } from "src/app/services/database/firebase-mock";
 import DirectionsViewModel = __esri.DirectionsViewModel;
 
@@ -51,6 +52,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   _Point;
   _locator;
   _Locate;
+  _Track;
 
   _DirectionsViewModel;
   // Instances
@@ -85,7 +87,11 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       setDefaultOptions({ css: true });
 
       // Load the modules for the ArcGIS API for JavaScript
-      const [esriConfig, Map, MapView, FeatureLayer, Graphic, Point, GraphicsLayer, route, RouteParameters, FeatureSet, Locate, Locator, DirectionsViewModel] = await loadModules([
+      const [esriConfig, Map, MapView,
+        FeatureLayer, Graphic, Point,
+        GraphicsLayer, route, RouteParameters,
+        FeatureSet, Locate, Locator,
+        DirectionsViewModel, Track] = await loadModules([
         "esri/config",
         "esri/Map",
         "esri/views/MapView",
@@ -98,7 +104,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         "esri/rest/support/FeatureSet",
         "esri/widgets/Locate",
         "esri/rest/locator",
-        "esri/widgets/Directions/DirectionsViewModel"
+        "esri/widgets/Directions/DirectionsViewModel",
+        "esri/widgets/Track"
       ]); 
 
       esriConfig.apiKey = "AAPK56c0ec3f83844ca6aec2c1a3f4c50481XfupaXXanCYXagEqkL81gQV3ZHQxKx8sDVpAs46n3Vpj1wNMQQ9umwwg-yJ4swAH";
@@ -115,6 +122,8 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       this._locator = Locator;
       this._Locate = Locate;
       this._DirectionsViewModel = DirectionsViewModel;
+      this._Track = Track;
+
       // Configure the Map
       const mapProperties = {
         basemap: this.basemap
@@ -152,10 +161,30 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         view: this.view,
         useHeadingEnabled: false,
         goToOverride: function(view, options) {
+          console.log(options.target);
+          console.log(options.target.latitude);
+          console.log(options.target.longitude);
           options.target.scale = 1500;
           return view.goTo(options.target);
         }
       });
+
+      const track = new Track({
+        view: this.view,
+        graphic: new Graphic({
+          symbol: {
+            type: "simple-marker",
+            size: "12px",
+            color: "green",
+            outline: {
+              color: "#efefef",
+              width: "1.5px"
+            }
+          }
+        }),
+        useHeadingEnabled: false
+      });
+      this.view.ui.add(track, "top-right");
 
       await this.view.when(); // wait for map to load
       console.log("ArcGIS map loaded");
@@ -208,6 +237,16 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     // this.map.add(parksLayer, 0);
 
     console.log("feature layers added");
+  }
+
+  getPosition(): Observable<any> {
+    return Observable.create(observer => {
+      window.navigator.geolocation.getCurrentPosition(position => {
+            observer.next(position);
+            observer.complete();
+          },
+          error => observer.error(error));
+    });
   }
 
   addPoint(lat: number, lng: number, register: boolean) {
@@ -381,7 +420,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       title: "Find Route",
       id: "route-action",
       labelExpressionInfo: {
-        expression: '"\ue64a"'  //esri-icon-directions2
+        expression: "\ue64a"  //esri-icon-directions2
       }
     };
     this.view.popup.close();
@@ -402,19 +441,22 @@ export class EsriMapComponent implements OnInit, OnDestroy {
             },
             popupTemplate: {
               title: "{PlaceName}",
-              content: "{Place_addr}" + "<br><br>" + result.location.x.toFixed(5) + "," + result.location.y.toFixed(5),
+              content: "{Place_addr}" + "<br><br>" +
+                  // result.location.x.toFixed(5) + "," + result.location.y.toFixed(5) + "<br><br>" +
+                  "{Phone}" + "<br><br>" +
+                  "<a href=\"{URL}\">{URL}</a>" + "<br><br>",
               // TODO ADD OTHER FIELDS
               actions: [routeAction]
             }
          }));
       });
-      if (results.length) {
-        const g = this.view.graphics.getItemAt(0);
-        this.view.popup.open({
-          features: [g],
-          location: g.geometry
-        });
-      }
+      // if (results.length) {
+      //   const g = this.view.graphics.getItemAt(0);
+      //   this.view.popup.open({
+      //     features: [g],
+      //     location: g.geometry
+      //   });
+      // }
   }
 
   findPlaces(pt) {
@@ -504,14 +546,22 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Initialize MapView and return an instance of MapView
-    this.initializeMap().then(() => {
-      // The map has been initialized
-      console.log("mapView ready: ", this.view.ready);
-      this.loaded = this.view.ready;
-      this.mapLoadedEvent.emit(true);
-      //this.runTimer();
-      this.addPointItem();
+
+    this.getPosition().subscribe(pos => {
+      console.log(pos);
+      console.log(pos.coords.latitude);
+      console.log(pos.coords.longitude);
+      this.center = [pos.coords.longitude, pos.coords.latitude]
+      this.initializeMap().then(() => {
+        // The map has been initialized
+        console.log("mapView ready: ", this.view.ready);
+        this.loaded = this.view.ready;
+        this.mapLoadedEvent.emit(true);
+        //this.runTimer();
+        this.addPointItem();
+      });
     });
+
   }
 
   ngOnDestroy() {

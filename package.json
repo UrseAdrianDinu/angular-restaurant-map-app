@@ -23,6 +23,8 @@
     "@angular/platform-browser": "^14.0.0",
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
+    "@ng-web-apis/common": "^2.1.0",
+    "@ng-web-apis/geolocation": "^2.0.0",
     "esri-loader": "^3.3.0",
     "firebase": "^9.15.0",
     "minimist": "^1.2.5",
