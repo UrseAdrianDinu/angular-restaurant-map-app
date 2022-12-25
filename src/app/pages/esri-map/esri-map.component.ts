@@ -71,6 +71,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   count: number = 0;
   timeoutHandler = null;
 
+  //folosit pt a salva coord restaurantului
+  locationCoords: Array<number> = [0,0];
+
   // firebase sync
   isConnected: boolean = false;
   subscriptionList: Subscription;
@@ -134,8 +137,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       this.map = new Map(mapProperties);
 
       this.addFeatureLayers();
-      this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
-
+      console.log("Aici:");
+      //this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
+      this.addPoint(this.center[1], this.center[0], true);
       // Initialize the MapView
       const mapViewProperties = {
         container: this.mapViewEl.nativeElement,
@@ -184,6 +188,23 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         }),
         useHeadingEnabled: false
       });
+
+      var addGraphic = (type: any, lng, lat) => {
+        const point = { //Create a point
+          type: "point",
+          longitude: lng,
+          latitude: lat
+        };
+        const graphic = new this._Graphic({
+          symbol: {
+            type: "simple-marker",
+            color: (type === "origin") ? "white" : "black",
+            size: "8px"
+          } as any,
+          geometry: point
+        });
+        this.view.graphics.add(graphic);
+      }
       this.view.ui.add(track, "top-right");
 
       await this.view.when(); // wait for map to load
@@ -200,7 +221,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         // Execute the measureThis() function if the measure-this action is clicked
         if (event.action.id === "route-action") {
           console.log("mere")
-
+          console.log(this.locationCoords[1],this.locationCoords[0])
+          addGraphic("origin", this.center[1], this.center[0]);
+          addGraphic("destination", this.locationCoords[1],this.locationCoords[0]);
+          this.getRoute();
         }
       });
       return this.view;
@@ -250,6 +274,9 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   }
 
   addPoint(lat: number, lng: number, register: boolean) {
+    console.log("Add point:");
+    console.log(lat);
+    console.log(lng);
     this.graphicsLayer = new this._GraphicsLayer();
     this.map.add(this.graphicsLayer);
     const point = { //Create a point
@@ -287,54 +314,54 @@ export class EsriMapComponent implements OnInit, OnDestroy {
   getRoute() {
     const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
 
-    const routeParams = new this._RouteParameters({
-      stops: new this._FeatureSet({
-        features: this.view.graphics.toArray()
-      }),
+    var getRoute = () => {
+      const routeParams = new this._RouteParameters({
+        stops: new this._FeatureSet({
+          features: this.view.graphics.toArray()
+        }),
+        returnDirections: true
+      });
 
-      returnDirections: true
+      this._Route.solve(routeUrl, routeParams).then((data: any) => {
+        for (let result of data.routeResults) {
+          result.route.symbol = {
+            type: "simple-line",
+            color: [5, 150, 255],
+            width: 3
+          };
+          this.view.graphics.add(result.route);
+        }
 
-    });
+        // Display directions
+        if (data.routeResults.length > 0) {
+          const directions: any = document.createElement("ol");
+          directions.classList = "esri-widget esri-widget--panel esri-directions__scroller";
+          directions.style.marginTop = "0";
+          directions.style.padding = "15px 15px 15px 30px";
+          const features = data.routeResults[0].directions.features;
 
-    this._Route.solve(routeUrl, routeParams)
-        .then(function(data) {
-          data.routeResults.forEach(function(result) {
-            result.route.symbol = new this._SimpleLineSymbol({
-              // type: "simple-line",
-              color: [5, 150, 255],
-              width: 3
-            });
-            this.view.graphics.add(result.route);
+          let sum = 0;
+          // Show each direction
+          features.forEach((result: any, i: any) => {
+            sum += parseFloat(result.attributes.length);
+            const direction = document.createElement("li");
+            direction.innerHTML = result.attributes.text + " (" + result.attributes.length + " miles)";
+            directions.appendChild(direction);
           });
 
-          // Display directions
-          if (data.routeResults.length > 0) {
-            const directions = document.createElement("ol");
-            this.directions.classList = "esri-widget esri-widget--panel esri-directions__scroller";
-            directions.style.marginTop = "0";
-            directions.style.padding = "15px 15px 15px 30px";
-            const features = data.routeResults[0].directions.features;
+          sum = sum * 1.609344;
+          console.log('dist (km) = ', sum);
 
-            // Show each direction
-            features.forEach(function(result,i){
-              const direction = document.createElement("li");
-              direction.innerHTML = result.attributes.text + " (" + result.attributes.length.toFixed(2) + " miles)";
-              directions.appendChild(direction);
-            });
+          this.view.ui.empty("top-right");
+          this.view.ui.add(directions, "top-right");
 
-            this.view.ui.empty("top-right");
-            this.view.ui.add(directions, "top-right");
+        }
 
-          }
-
-        })
-
-        .catch(function(error){
-          console.log(error);
-        })
-
+      }).catch((error: any) => {
+        console.log(error);
+      });
+    }
   }
-
   addRouter() {
     const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
 
@@ -414,6 +441,12 @@ export class EsriMapComponent implements OnInit, OnDestroy {
 
 
   showResults(results) {
+    //locatia restaurantului
+    this.view.on("click", (event) => {
+      console.log("point clicked: ", event.mapPoint.latitude, event.mapPoint.longitude);
+      this.locationCoords = [event.mapPoint.latitude, event.mapPoint.longitude];
+
+    });
     console.log(results);
     const routeAction = {
 
@@ -426,6 +459,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
     this.view.popup.close();
       this.view.graphics.removeAll();
       results.forEach((result)=>{
+
         this.view.graphics.add(
           new this._Graphic({
             attributes: result.attributes,
@@ -442,7 +476,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
             popupTemplate: {
               title: "{PlaceName}",
               content: "{Place_addr}" + "<br><br>" +
-                  // result.location.x.toFixed(5) + "," + result.location.y.toFixed(5) + "<br><br>" +
+                   result.location.x.toFixed(5) + "," + result.location.y.toFixed(5) + "<br><br>" +
                   "{Phone}" + "<br><br>" +
                   "<a href=\"{URL}\">{URL}</a>" + "<br><br>",
               // TODO ADD OTHER FIELDS
@@ -552,6 +586,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
       console.log(pos.coords.latitude);
       console.log(pos.coords.longitude);
       this.center = [pos.coords.longitude, pos.coords.latitude]
+
       this.initializeMap().then(() => {
         // The map has been initialized
         console.log("mapView ready: ", this.view.ready);
@@ -559,7 +594,10 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         this.mapLoadedEvent.emit(true);
         //this.runTimer();
         this.addPointItem();
+        this.addPoint(pos.coords.latitude,pos.coords.longitude,true);
+
       });
+
     });
 
   }
