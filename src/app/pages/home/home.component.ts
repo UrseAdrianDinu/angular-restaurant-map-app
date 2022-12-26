@@ -65,6 +65,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     //folosit pt a salva coord restaurantului
     locationCoords: Array<number> = [0,0];
 
+    //nume rest
+    restname : string
+
     // firebase sync
     isConnected: boolean = false;
     subscriptionList: Subscription;
@@ -216,6 +219,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.findPlaces(this.view.center);
             });
             console.log(this.view.center);
+
             // Event handler that fires each time an action is clicked.
             this.view.popup.on("trigger-action", (event) => {
                 // Execute the measureThis() function if the measure-this action is clicked
@@ -228,9 +232,20 @@ export class HomeComponent implements OnInit, OnDestroy {
                     console.log("rest")
                     console.log(this.locationCoords[1],this.locationCoords[0])
                     console.log(this.view.popup.title)
-                    //addGraphic("origin", this.center[1], this.center[0]);
-                    // addGraphic("destination", this.locationCoords[1],this.locationCoords[0]);
+                    this.restname = this.view.popup.title
+                    this.view.graphics.removeAll();
+                    addGraphic("origin", this.center[0], this.center[1]);
+                    addGraphic("destination", this.locationCoords[1],this.locationCoords[0]);
                     this.getRoutee();
+                    //this.getDirections()
+                }
+                if (event.action.id === "review-action") {
+                    this.view.graphics.add(
+                        new this._Graphic({
+                            popupTemplate: {
+                                title: "Review pentru " + this.restname
+                            }
+                        }));
                 }
             });
             return this.view;
@@ -316,37 +331,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
 
-
     getRoutee() {
         const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
 
-        // const routeParams = new this._RouteParameters({
-        //   stops: new this._FeatureSet({
-        //     features: this.view.graphics.toArray()
-        //   }),
-        //   returnDirections: true
-        // });
-        const stops = new this._FeatureSet({
-            features: [
-                {
-                    "location" : {
-                        "latitude" : this.locationCoords[1],
-                        "longitude" : this.locationCoords[0]
-                    }
-                } ,
-                {
-                    "location" : {
-                        "latitude" : this.center[1],
-                        "longitude" : this.center[0]
-                    }
-                }
-            ]
-        });
-        console.log("TEST:");
-        console.log(stops);
         const routeParams = new this._RouteParameters({
-            stops
+          stops: new this._FeatureSet({
+             features: this.view.graphics.toArray()
+          }),
+          returnDirections: true
         });
+        console.log("TEST");
+        console.log(routeParams);
         console.log("TEST:");
 
         this._Route.solve(routeUrl, routeParams).then((data: any) => {
@@ -482,6 +477,15 @@ export class HomeComponent implements OnInit, OnDestroy {
                 expression: "\ue64a"  //esri-icon-directions2
             }
         };
+
+        const reviewAction = {
+
+            title: "Review",
+            id: "review-action",
+            labelExpressionInfo: {
+                expression: "\ue64a"  //esri-icon-directions2
+            }
+        };
         this.view.popup.close();
         this.view.graphics.removeAll();
         results.forEach((result)=>{
@@ -506,7 +510,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                             "{Phone}" + "<br><br>" +
                             "<a href=\"{URL}\">{URL}</a>" + "<br><br>",
                         // TODO ADD OTHER FIELDS
-                        actions: [routeAction]
+                        actions: [routeAction, reviewAction]
                     }
                 }));
         });
@@ -614,6 +618,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 
     ngOnInit() {
+
         // Initialize MapView and return an instance of MapView
 
         console.log("INIT")
@@ -631,7 +636,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                 //this.runTimer();
                 //this.addPointItem();
                 this.addPoint(pos.coords.latitude,pos.coords.longitude,true);
-
             });
 
         });
