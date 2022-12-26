@@ -593,7 +593,7 @@ export class EsriMapComponent implements OnInit, OnDestroy {
         this.loaded = this.view.ready;
         this.mapLoadedEvent.emit(true);
         //this.runTimer();
-        this.addPointItem();
+        //this.addPointItem();
         this.addPoint(pos.coords.latitude,pos.coords.longitude,true);
 
       });

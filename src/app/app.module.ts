@@ -19,12 +19,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
-
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatCardModule} from "@angular/material/card";
 
 
 @NgModule({
   declarations: [AppComponent, EsriMapComponent],
-  imports: [BrowserModule, 
+  imports: [BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatTabsModule,
@@ -32,8 +34,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatDividerModule,
     MatListModule,
     FlexLayoutModule,
+    BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
-    AngularFireDatabaseModule],
+    AngularFireDatabaseModule, MatToolbarModule, MatCheckboxModule, MatCardModule],
   providers: [
     FirebaseService,
     FirebaseMockService],

@@ -1,4 +1,36 @@
 .title {
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
+    margin-bottom: 40px;
+}
+
+.container {
+    margin: 0px;
+    height: 9vh;
+    width: 99vw;
+}
+
+.item {
+    color: #ffffff;
+    font-family: sans-serif;
+    font-size: 2em;
+
+}
+
+.item-1 {
+    background-color: #009169;
+    padding: 20px;
+}
+
+.item-2 {
+    background-color: #009169;
+}
+
+.login {
+    background-color: #6699ff;
+    color: #fff;
+}
+.signup {
+    background-color: #70db70;
+    color: #fff;
 }
