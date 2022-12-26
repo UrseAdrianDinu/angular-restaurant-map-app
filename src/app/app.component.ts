@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-root',
@@ -13,6 +15,7 @@ export class AppComponent {
   mapZoomLevel = 12;
   isLogged = false;
 
+  constructor(private router: Router) { }
   
 
   // See app.component.html
@@ -21,11 +24,11 @@ export class AppComponent {
   }
 
   login() {
-      console.log("LOGIN");
+      this.router.navigate(['/login']);
     }
 
   signup() {
-    console.log("SIGNUP");
+    this.router.navigate(['/register']);
   }
 }
 

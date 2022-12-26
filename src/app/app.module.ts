@@ -22,10 +22,13 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatCardModule} from "@angular/material/card";
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
+import {HomeComponent} from "./pages/home/home.component";
 
 
 @NgModule({
-  declarations: [AppComponent, EsriMapComponent],
+  declarations: [AppComponent, EsriMapComponent,HomeComponent, LoginComponent, RegisterComponent],
   imports: [BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
