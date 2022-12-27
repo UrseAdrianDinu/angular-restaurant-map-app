@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     _locator;
     _Locate;
     _Track;
+    _Search;
 
     _ButtonMenu;
 
@@ -70,6 +71,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     //nume rest
     restname : string
 
+    route : boolean = false;
+
     // firebase sync
     isConnected: boolean = false;
     subscriptionList: Subscription;
@@ -92,7 +95,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 FeatureLayer, Graphic, Point,
                 GraphicsLayer, route, RouteParameters,
                 FeatureSet, Locate, Locator,
-                DirectionsViewModel, Track, ButtonMenu] = await loadModules([
+                DirectionsViewModel, Track, ButtonMenu, Search] = await loadModules([
                 "esri/config",
                 "esri/Map",
                 "esri/views/MapView",
@@ -107,7 +110,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                 "esri/rest/locator",
                 "esri/widgets/Directions/DirectionsViewModel",
                 "esri/widgets/Track",
-                "esri/widgets/FeatureTable/Grid/support/ButtonMenu"
+                "esri/widgets/FeatureTable/Grid/support/ButtonMenu",
+                "esri/widgets/Search"
             ]);
 
             esriConfig.apiKey = "AAPK56c0ec3f83844ca6aec2c1a3f4c50481XfupaXXanCYXagEqkL81gQV3ZHQxKx8sDVpAs46n3Vpj1wNMQQ9umwwg-yJ4swAH";
@@ -126,6 +130,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this._DirectionsViewModel = DirectionsViewModel;
             this._Track = Track;
             this._ButtonMenu = ButtonMenu;
+            this._Search = Search;
 
             // Configure the Map
             const mapProperties = {
@@ -161,6 +166,11 @@ export class HomeComponent implements OnInit, OnDestroy {
                 console.log("map moved: ", point.longitude, point.latitude);
             });
 
+            const search = new this._Search({  //Add Search widget
+                view: this.view
+            });
+
+            this.view.ui.add(search, "top-right"); //Add to the map
 
             const locate = new Locate({
                 view: this.view,
@@ -211,7 +221,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 });
                 this.view.graphics.add(graphic);
             }
-            this.view.ui.add(track, "top-right");
+            this.view.ui.add(track, "top-left");
 
             await this.view.when(); // wait for map to load
             console.log("ArcGIS map loaded");
@@ -224,10 +234,16 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
             console.log(this.view.center);
 
+
+
+
             // Event handler that fires each time an action is clicked.
             this.view.popup.on("trigger-action", (event) => {
                 // Execute the measureThis() function if the measure-this action is clicked
                 if (event.action.id === "route-action") {
+
+                    if(this.route == false) {
+                        this.route = true
                     console.log("SNT AICI")
                     this.locationCoords = [this.view.popup.location.latitude, this.view.popup.location.longitude]
                     // console.log("mere")
@@ -239,7 +255,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     this.restname = this.view.popup.title
                     this.view.graphics.removeAll();
                     addGraphic("origin", this.center[0], this.center[1]);
-                    addGraphic("destination", this.locationCoords[1],this.locationCoords[0]);
+                    addGraphic("destination", this.locationCoords[1], this.locationCoords[0]);
                     this.getRoutee();
                     var cleanScreen = () => {
                         this.view.graphics.removeAll();
@@ -249,10 +265,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                     }
 
                     var reinitMap = () => {
-                        this.view.when(()=>{
+                        this.view.when(() => {
                             this.findPlaces(this.view.center);
                         });
-                        this.view.ui.add(track, "top-right");
+                      //  this.view.ui.add(track, "top-right");
                     }
                     // const buttonMenu = new this._ButtonMenu ({
                     //     iconClass: "esri-icon-left",
@@ -276,20 +292,37 @@ export class HomeComponent implements OnInit, OnDestroy {
                     btn.style.border = '5px';
                     this.view.ui.add(btn, 'bottom-left');
                     btn.addEventListener('click', () => {
-                       console.log("mere")
+                        console.log("mere")
                         cleanScreen()
                         reinitMap()
+                        this.route = false
                     });
                 }
-                if (event.action.id === "review-action") {
-                    this.view.graphics.add(
-                        new this._Graphic({
-                            popupTemplate: {
-                                title: "Review pentru " + this.restname
-                            }
-                        }));
                 }
+                if (event.action.id === "review-action") {
+                    console.log("dc nu mere")
+                    var review = document.createElement('ol');
+                    review.style.marginTop = "0";
+                    review.style.padding = "15px 15px 15px 30px";
+                    review.style.width = '300px';
+                    review.style.height = '400px';
+                    review.style.background = 'white';
+                    review.innerHTML = '<div id="myDIV" style="padding:16px;background-color:lightgray">\n' +
+                        '<h3>A DIV element</h3>\n' +
+                        '</div>';
+                    this.view.ui.add(review, 'top-right');
+                    this.view.ui.remove(search);
+
+
+                }
+
             });
+            
+            if(this.view.popup.visible == true){
+                console.log("afisat")
+            } else {
+                console.log("neafisat")
+            }
             return this.view;
         } catch (error) {
             console.log("EsriLoader: ", error);
@@ -516,14 +549,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
             title: "Find Route",
             id: "route-action",
-            labelExpressionInfo: {
-                expression: "\ue64a"  //esri-icon-directions2
-            }
+            icon: 	'<mat-icon> call</mat-icon>'
         };
 
         const reviewAction = {
 
-            title: "Review",
+            title: "Reviews",
             id: "review-action",
             labelExpressionInfo: {
                 expression: "\ue64a"  //esri-icon-directions2
