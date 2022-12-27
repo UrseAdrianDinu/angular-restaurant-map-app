@@ -25,6 +25,7 @@ import {MatCardModule} from "@angular/material/card";
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import {HomeComponent} from "./pages/home/home.component";
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -39,7 +40,7 @@ import {HomeComponent} from "./pages/home/home.component";
     FlexLayoutModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase, 'AngularDemoArcGIS'),
-    AngularFireDatabaseModule, MatToolbarModule, MatCheckboxModule, MatCardModule],
+    AngularFireDatabaseModule, MatToolbarModule, MatCheckboxModule, MatCardModule, FormsModule],
   providers: [
     FirebaseService,
     FirebaseMockService],

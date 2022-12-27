@@ -1,0 +1,56 @@
+.container {
+  height: 9vh;
+  width: 99vw;
+  cursor: default;
+  margin-bottom: 10px;
+}
+
+.item {
+  color: #ffffff;
+  font-family: sans-serif;
+  font-size: 2em;
+  cursor: default;
+}
+
+.item-1 {
+  background-color: #009169;
+  padding: 20px;
+}
+
+.label-text {
+  color: black;
+  font-family: sans-serif;
+  font-size: 2em;
+  margin-left: 50px;
+}
+
+.input-text {
+  color: black;
+  font-family: sans-serif;
+  font-size: 1em;
+  margin-left: 50px;
+  margin-bottom: 10px;
+}
+
+.back {
+  background-color: #009169;
+  color: #fff;
+  padding: 20px;
+  font-size: 2em;
+  cursor: pointer;
+}
+
+.create-acc {
+  background-color: #009169;
+  color: #fff;
+  cursor: pointer;
+  margin-left: 35px;
+  font-size: 2em;
+  border-color: white;
+  margin-top: 100px;
+}
+
+.valid {
+  color:red;
+}
+

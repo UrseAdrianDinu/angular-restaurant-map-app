@@ -11,7 +11,7 @@ import {
 import { setDefaultOptions, loadModules } from 'esri-loader';
 import esri = __esri; // Esri TypeScript Types
 import {Observable, Subscription } from "rxjs";
-import { FirebaseService, ITestItem } from "src/app/services/database/firebase";
+import { FirebaseService, IUser } from "src/app/services/database/firebase";
 import {GeolocationService} from '@ng-web-apis/geolocation';
 import { FirebaseMockService } from "src/app/services/database/firebase-mock";
 import DirectionsViewModel = __esri.DirectionsViewModel;
@@ -629,26 +629,26 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     addPointItem() {
         console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
-        this.fbs.addPointItem(this.view.center.latitude, this.view.center.longitude);
+        //this.fbs.addPointItem(this.view.center.latitude, this.view.center.longitude);
     }
 
-    connectFirebase() {
-        if (this.isConnected) {
-            return;
-        }
-        this.isConnected = true;
-        this.fbs.connectToDatabase();
-        this.subscriptionList = this.fbs.getChangeFeedList().subscribe((items: ITestItem[]) => {
-            console.log("got new items from list: ", items);
-            this.graphicsLayer.removeAll();
-            for (let item of items) {
-                this.addPoint(item.lat, item.lng, false);
-            }
-        });
-        this.subscriptionObj = this.fbs.getChangeFeedObj().subscribe((stat: ITestItem[]) => {
-            console.log("item updated from object: ", stat);
-        });
-    }
+    // connectFirebase() {
+    //     if (this.isConnected) {
+    //         return;
+    //     }
+    //     this.isConnected = true;
+    //     this.fbs.connectToDatabase();
+    //     this.subscriptionList = this.fbs.getChangeFeedList().subscribe((items: ITestItem[]) => {
+    //         console.log("got new items from list: ", items);
+    //         this.graphicsLayer.removeAll();
+    //         for (let item of items) {
+    //             //this.addPoint(item.lat, item.lng, false);
+    //         }
+    //     });
+    //     this.subscriptionObj = this.fbs.getChangeFeedObj().subscribe((stat: ITestItem[]) => {
+    //         console.log("item updated from object: ", stat);
+    //     });
+    // }
 
     login() {
         this.router.navigate(['/login']);

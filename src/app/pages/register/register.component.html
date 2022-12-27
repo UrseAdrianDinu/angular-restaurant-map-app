@@ -1,1 +1,43 @@
-<p>register works!</p>
+<div class="container"
+     fxLayout
+     fxLayoutAlign="center"
+     fxLayoutGap.xs="0">
+
+    <div class="item item-1" fxFlex="90%">
+        Map with Italian Restaurants
+    </div>
+
+    <a class="item item-2 back" fxFlex="10%" (click)="goHome()">
+        Back
+    </a>
+
+</div>
+
+<form (ngSubmit)="onSubmit()">
+    <label class="label-text" for="email">Email:</label><br>
+    <input class="input-text" type="email" id="email" [(ngModel)]="email" name="email"><br>
+
+    <label class="label-text" for="firstName">First Name:</label><br>
+    <input class="input-text" type="text" id="firstName" [(ngModel)]="firstName" name="firstName"><br>
+
+    <label class="label-text" for="lastName">Last Name:</label><br>
+    <input class="input-text" type="text" id="lastName" [(ngModel)]="lastName" name="lastName"><br>
+
+    <label class="label-text" for="lastName">Phone:</label><br>
+    <input class="input-text" type="text" id="phone" [(ngModel)]="phone" name="phone"><br>
+
+    <label class="label-text" for="username">Username:</label><br>
+    <input class="input-text" type="text" id="username" [(ngModel)]="username" name="username"><br>
+
+    <label class="label-text" for="password">Password:</label><br>
+    <input class="input-text" type="password" id="password" [(ngModel)]="password" name="password"><br><br>
+
+    <div *ngIf="submitted" class="valid">
+        <div *ngIf="emptyFields" class="valid">
+            Please complete all fields
+        </div>
+    </div>
+
+    <button type="submit" class="create-acc">Create Account</button>
+</form>
+<div></div>

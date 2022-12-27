@@ -2,10 +2,13 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable } from 'rxjs';
 
-export interface ITestItem {
-    name: string,
-    lat: number,
-    lng: number
+export interface IUser {
+    email: string,
+    firstName: string,
+    lastName: string,
+    phone: string,
+    username: string,
+    password: string
 }
 
 @Injectable()
@@ -30,22 +33,40 @@ export class FirebaseService {
     getChangeFeedObj() {
         return this.objFeed;
     }
+    //
+    // addPointItem(lat: number, lng: number) {
+    //     let item: ITestItem = {
+    //         name: "test",
+    //         lat: lat,
+    //         lng: lng
+    //     };
+    //     this.db.list('list').push(item);
+    // }
 
-    addPointItem(lat: number, lng: number) {
-        let item: ITestItem = {
-            name: "test",
-            lat: lat,
-            lng: lng
+    // syncPointItem(lat: number, lng: number) {
+    //     let item: ITestItem = {
+    //         name: "test",
+    //         lat: lat,
+    //         lng: lng
+    //     };
+    //     this.db.object('obj').set([item]);
+    // }
+    addUser( email: string,
+             firstName: string,
+             lastName: string,
+             phone: string,
+             username: string,
+             password: string) {
+        let user: IUser = {
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+            username: username,
+            password: password,
         };
-        this.db.list('list').push(item);
+        this.db.database.ref('users/' + username).set(user).then(r => console.log("User added!"));
     }
 
-    syncPointItem(lat: number, lng: number) {
-        let item: ITestItem = {
-            name: "test",
-            lat: lat,
-            lng: lng
-        };
-        this.db.object('obj').set([item]);
-    }
+
 }
