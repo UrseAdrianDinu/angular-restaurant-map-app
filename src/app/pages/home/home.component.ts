@@ -43,6 +43,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     _Locate;
     _Track;
 
+    _ButtonMenu;
+
     _DirectionsViewModel;
     // Instances
     map: esri.Map;
@@ -90,7 +92,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 FeatureLayer, Graphic, Point,
                 GraphicsLayer, route, RouteParameters,
                 FeatureSet, Locate, Locator,
-                DirectionsViewModel, Track] = await loadModules([
+                DirectionsViewModel, Track, ButtonMenu] = await loadModules([
                 "esri/config",
                 "esri/Map",
                 "esri/views/MapView",
@@ -104,7 +106,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                 "esri/widgets/Locate",
                 "esri/rest/locator",
                 "esri/widgets/Directions/DirectionsViewModel",
-                "esri/widgets/Track"
+                "esri/widgets/Track",
+                "esri/widgets/FeatureTable/Grid/support/ButtonMenu"
             ]);
 
             esriConfig.apiKey = "AAPK56c0ec3f83844ca6aec2c1a3f4c50481XfupaXXanCYXagEqkL81gQV3ZHQxKx8sDVpAs46n3Vpj1wNMQQ9umwwg-yJ4swAH";
@@ -122,6 +125,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this._Locate = Locate;
             this._DirectionsViewModel = DirectionsViewModel;
             this._Track = Track;
+            this._ButtonMenu = ButtonMenu;
 
             // Configure the Map
             const mapProperties = {
@@ -226,18 +230,56 @@ export class HomeComponent implements OnInit, OnDestroy {
                 if (event.action.id === "route-action") {
                     console.log("SNT AICI")
                     this.locationCoords = [this.view.popup.location.latitude, this.view.popup.location.longitude]
-                    console.log("mere")
-                    console.log("acasa")
-                    console.log(this.center[1], this.center[0])
-                    console.log("rest")
-                    console.log(this.locationCoords[1],this.locationCoords[0])
-                    console.log(this.view.popup.title)
+                    // console.log("mere")
+                    // console.log("acasa")
+                    // console.log(this.center[1], this.center[0])
+                    // console.log("rest")
+                    // console.log(this.locationCoords[1],this.locationCoords[0])
+                    // console.log(this.view.popup.title)
                     this.restname = this.view.popup.title
                     this.view.graphics.removeAll();
                     addGraphic("origin", this.center[0], this.center[1]);
                     addGraphic("destination", this.locationCoords[1],this.locationCoords[0]);
                     this.getRoutee();
-                    //this.getDirections()
+                    var cleanScreen = () => {
+                        this.view.graphics.removeAll();
+                        this.view.ui.empty("top-right")
+                        this.view.ui.remove(btn);
+                        //buttonMenu.visible = false;
+                    }
+
+                    var reinitMap = () => {
+                        this.view.when(()=>{
+                            this.findPlaces(this.view.center);
+                        });
+                        this.view.ui.add(track, "top-right");
+                    }
+                    // const buttonMenu = new this._ButtonMenu ({
+                    //     iconClass: "esri-icon-left",
+                    //     items: [{
+                    //         label: "Stop routing",
+                    //         clickFunction: function (event) {
+                    //             console.log("mere ura")
+                    //             cleanScreen()
+                    //             reinitMap()
+                    //         }
+                    //     }]
+                    // });
+                    //this.view.ui.add(buttonMenu, "top-left");
+
+                    var btn = document.createElement('button');
+                    btn.innerText = 'Stop routing';
+                    btn.style.width = '100px';
+                    btn.style.height = '25px';
+                    btn.style.background = 'white';
+                    btn.style.borderColor = '#009169';
+                    btn.style.border = '5px';
+                    this.view.ui.add(btn, 'bottom-left');
+                    btn.addEventListener('click', () => {
+                       console.log("mere")
+                        cleanScreen()
+                        reinitMap()
+                    });
                 }
                 if (event.action.id === "review-action") {
                     this.view.graphics.add(
@@ -373,6 +415,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 sum = sum * 1.609344;
                 console.log('dist (km) = ', sum);
+
 
                 this.view.ui.empty("top-right");
                 this.view.ui.add(directions, "top-right");
