@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     restname : string
 
     route : boolean = false;
-
+    review : boolean = false;
     // firebase sync
     isConnected: boolean = false;
     subscriptionList: Subscription;
@@ -148,9 +148,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.map = new Map(mapProperties);
 
             this.addFeatureLayers();
-            console.log("Aici:");
-            //this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
-            this.addPoint(this.center[1], this.center[0], true);
+
             // Initialize the MapView
             const mapViewProperties = {
                 container: this.mapViewEl.nativeElement,
@@ -171,7 +169,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 let point = this.view.toMap({ x: event.x, y: event.y });
                 console.log("map moved: ", point.longitude, point.latitude);
             });
-
+            this.addPoint(this.center[1],this.center[0],true);
             const search = new this._Search({  //Add Search widget
                 view: this.view
             });
@@ -306,24 +304,95 @@ export class HomeComponent implements OnInit, OnDestroy {
                 }
                 }
                 if (event.action.id === "review-action") {
-                    console.log("dc nu mere")
-                    var review = document.createElement('ol');
-                    review.style.marginTop = "0";
-                    review.style.padding = "15px 15px 15px 30px";
-                    review.style.width = '300px';
-                    review.style.height = '400px';
-                    review.style.background = 'white';
-                    review.innerHTML = '<div id="myDIV" style="padding:16px;background-color:lightgray">\n' +
-                        '<h3>A DIV element</h3>\n' +
-                        '</div>';
-                    this.view.ui.add(review, 'top-right');
-                    this.view.ui.remove(search);
+                    if (this.review == false) {
+                        this.review = true
+                        console.log("dc nu mere")
+                        var closeReview = () => {
+                            console.log("test")
+                            this.view.graphics.removeAll();
+                            this.view.ui.empty("top-right")
+                            this.view.ui.remove(review);
+
+                            this.view.when(() => {
+                                this.findPlaces(this.view.center);
+                            });
+                            this.review = false
+
+                        }
+                        var button = document.createElement('button')
+                        button.innerHTML = 'Close';
+                        button.onclick = function() {
+                            console.log('eeee')
+                            closeReview()
+                            return false
+                        }
+
+                        var review = document.createElement('ol');
+                        review.style.marginTop = "0";
+                        review.style.padding = "15px 15px 15px 30px";
+                        review.style.width = '300px';
+                        review.style.height = '400px';
+                        review.style.background = 'white';
+                        review.appendChild(button)
+                        var chestionar = document.createElement('ol');
+                        chestionar.innerHTML =
+                        '<body>' +
+                            '<h1>Restaurant Review </h1>' +
+                        '<form action="/submit-review" method="post">' +
+                            '<label for="rating">Overall Rating:</label><br>' +
+                        '<input type="radio" name="rating" value="1"> 1<br>' +
+                        '<input type="radio" name="rating" value="2"> 2<br>' +
+                        '<input type="radio" name="rating" value="3"> 3<br>' +
+                        '<input type="radio" name="rating" value="4"> 4<br>' +
+                        '<input type="radio" name="rating" value="5"> 5<br>' +
+                            '<label for="comments">Comments:</label><br>' +
+                        '<textarea name="comments" rows="5" cols="20"></textarea><br>' +
+                            '<input type="submit" value="Submit">' +
+                            '</form>' +
+                            '</body>';
+                        var buttonReviewAction = () => {
+                            review.appendChild(buttonReviewBack)
+                            review.appendChild(chestionar)
+                            review.removeChild(reviewExistente)
 
 
+                        }
+                        var buttonReview = document.createElement('button')
+                        buttonReview.innerText = 'Review';
+                        buttonReview.onclick = function() {
+                            console.log('eeee')
+                            buttonReviewAction()
+                            return false
+                        }
+                        review.appendChild(buttonReview)
+                        //AICI PUNEM LISTA CU REVIEWURI
+                        var reviewExistente = document.createElement('ol');
+                        reviewExistente.innerText = this.view.popup.title;
+                        review.appendChild(reviewExistente)
+                        var buttonReviewBackAction = () => {
+                            review.appendChild(reviewExistente)
+                            review.removeChild(chestionar)
+                            review.removeChild(buttonReviewBack)
+                            return false
+
+                        }
+                        var buttonReviewBack = document.createElement('button')
+                        buttonReviewBack.innerHTML = 'Back to reviews';
+                        buttonReviewBack.onclick = function() {
+                            buttonReviewBackAction()
+                            return false
+                        }
+
+                        this.view.ui.add(review, 'top-right');
+                        this.view.ui.remove(search);
+
+
+                    }
                 }
 
             });
-            
+
+
             if(this.view.popup.visible == true){
                 console.log("afisat")
             } else {
@@ -334,7 +403,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             console.log("EsriLoader: ", error);
         }
     }
-
 
     addFeatureLayers() {
         // Trailheads feature layer (points)
@@ -654,7 +722,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
+        //this.addPoint(this.pointCoords[1], this.pointCoords[0], true);
     }
 
     stopTimer() {
@@ -664,10 +732,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
     }
 
-    addPointItem() {
-        console.log("Map center: " + this.view.center.latitude + ", " + this.view.center.longitude);
-        //this.fbs.addPointItem(this.view.center.latitude, this.view.center.longitude);
-    }
 
     // connectFirebase() {
     //     if (this.isConnected) {
@@ -714,8 +778,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.loaded = this.view.ready;
                 this.mapLoadedEvent.emit(true);
                 //this.runTimer();
-                //this.addPointItem();
+
                 this.addPoint(pos.coords.latitude,pos.coords.longitude,true);
+
+
             });
 
         });
