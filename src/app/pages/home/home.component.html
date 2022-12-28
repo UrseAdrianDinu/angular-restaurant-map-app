@@ -1,18 +1,30 @@
 <div class="container"
      fxLayout
      fxLayoutAlign="center"
-     fxLayoutGap.xs="0">
+     fxLayoutGap.xs="0"
+     >
 
-  <div *ngIf="!isLogged" class="item item-1" fxFlex="90%">
+  <div *ngIf="!isLogged" class="item item-1" fxFlex="80%">
     Map with Italian Restaurants
   </div>
 
-  <div *ngIf="isLogged" class="item item-1" fxFlex="100%">
+  <div *ngIf="isLogged" class="item item-1" fxFlex="80%">
     Map with Italian Restaurants
+  </div>
+
+  <div *ngIf="isLogged" class="item item-1 logged-user" fxFlex="20%">
+    Logged as {{username}}
+  </div>
+
+  <div *ngIf="!isLogged" fxFlex="10%" style="color: #009169; background-color: #009169">
+    <form (ngSubmit)="onSubmit()" fxLayout="column" style="height: 100%; width: 98%;">
+      <input class="input-text" type="text" fxFlex="50%" id="username" placeholder="username" [(ngModel)]="username" name="username">
+      <input class="input-text" type="password" fxFlex="50%" id="password" placeholder="password"[(ngModel)]="password" name="password">
+    </form>
   </div>
 
   <div *ngIf="!isLogged" fxLayout="column" class="item item-2" fxFlex="10%" fxFlexOrder="3" fxLayoutGap="2px">
-    <button mat-raised-button fxFlex="50%" class="login" (click)="login()">Log in</button>
+    <button mat-raised-button fxFlex="50%" class="login" (click)="onSubmit()">Log in</button>
     <button mat-raised-button fxFlex="50%" class="signup" (click)="signup()">Sign up</button>
   </div>
 

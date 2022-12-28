@@ -33,8 +33,17 @@
     <input class="input-text" type="password" id="password" [(ngModel)]="password" name="password"><br><br>
 
     <div *ngIf="submitted" class="valid">
-        <div *ngIf="emptyFields" class="valid">
-            Please complete all fields
+        <div *ngIf="emptyFields">
+            Please complete all fields!
+        </div>
+        <div *ngIf="!emptyFields && usernameExists">
+            Username already exists!
+        </div>
+        <div *ngIf="!emptyFields && !validMail && !usernameExists">
+            Please enter a valid mail address!
+        </div>
+        <div *ngIf="!emptyFields && validMail && !usernameExists && !validPass">
+            Password must be at least 8 characters long!
         </div>
     </div>
 

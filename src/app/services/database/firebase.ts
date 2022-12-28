@@ -68,5 +68,10 @@ export class FirebaseService {
         this.db.database.ref('users/' + username).set(user).then(r => console.log("User added!"));
     }
 
+    getUser(username:string) {
+        //this.db.database.ref('users/' + username).
+        return this.db.object('users/' + username);
+    }
+
 
 }

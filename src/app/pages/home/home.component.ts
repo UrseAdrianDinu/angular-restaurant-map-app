@@ -10,7 +10,7 @@ import {
 } from "@angular/core";
 import { setDefaultOptions, loadModules } from 'esri-loader';
 import esri = __esri; // Esri TypeScript Types
-import {Observable, Subscription } from "rxjs";
+import {firstValueFrom, Observable, Subscription} from "rxjs";
 import { FirebaseService, IUser } from "src/app/services/database/firebase";
 import {GeolocationService} from '@ng-web-apis/geolocation';
 import { FirebaseMockService } from "src/app/services/database/firebase-mock";
@@ -28,6 +28,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // The <div> where we will place the map
     @ViewChild("mapViewNode", { static: true }) private mapViewEl: ElementRef;
+
+
 
     // register Dojo AMD dependencies
     _Map;
@@ -54,6 +56,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     graphicsLayer: esri.GraphicsLayer;
 
     isLogged = false;
+
+    username: any;
+
+    password:any;
 
     // Attributes
     zoom = 10;
@@ -722,5 +728,25 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.view.container = null;
         }
         this.stopTimer();
+    }
+
+    async onSubmit() {
+        if (!this.username && this.password) {
+            alert("Username not provided")
+        } else if (this.username && !this.password) {
+            alert("Password not provided")
+        } else {
+            let user = await firstValueFrom(this.fbs.getUser(this.username).valueChanges()) as IUser;
+            if(!user) {
+                alert("Invalid username/password");
+            } else {
+                if (user.password === this.password){
+                    this.isLogged=true;
+                } else {
+                    alert("Invalid username/password");
+                }
+            }
+        }
+
     }
 }

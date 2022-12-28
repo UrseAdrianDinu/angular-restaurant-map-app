@@ -28,6 +28,7 @@
     "esri-loader": "^3.3.0",
     "firebase": "^9.15.0",
     "minimist": "^1.2.5",
+    "ngx-toastr": "^16.0.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

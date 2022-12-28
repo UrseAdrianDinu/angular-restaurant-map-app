@@ -44,13 +44,19 @@
   background-color: #009169;
   color: #fff;
   cursor: pointer;
-  margin-left: 35px;
+  margin-left: 50px;
   font-size: 2em;
   border-color: white;
-  margin-top: 100px;
+  bottom: 12%;
+  position: fixed;
 }
 
 .valid {
   color:red;
+  font-family: sans-serif;
+  margin-left: 50px;
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
