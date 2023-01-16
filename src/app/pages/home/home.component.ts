@@ -241,75 +241,68 @@ export class HomeComponent implements OnInit, OnDestroy {
             console.log(this.view.center);
 
 
-            const featureLayer = new this._FeatureLayer({
-                url:
-                    "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0"
-            });
-            this.map.add(featureLayer);
-
-
 
             // Event handler that fires each time an action is clicked.
-            this.view.popup.on("trigger-action", (event) => {
+            this.view.popup.on("trigger-action", async (event) => {
                 // Execute the measureThis() function if the measure-this action is clicked
                 if (event.action.id === "route-action") {
 
-                    if(this.route == false) {
+                    if (this.route == false) {
                         this.route = true
-                    console.log("SNT AICI")
-                    this.locationCoords = [this.view.popup.location.latitude, this.view.popup.location.longitude]
-                    // console.log("mere")
-                    // console.log("acasa")
-                    // console.log(this.center[1], this.center[0])
-                    // console.log("rest")
-                    // console.log(this.locationCoords[1],this.locationCoords[0])
-                    // console.log(this.view.popup.title)
-                    this.restname = this.view.popup.title
-                    this.view.graphics.removeAll();
-                    addGraphic("origin", this.center[0], this.center[1]);
-                    addGraphic("destination", this.locationCoords[1], this.locationCoords[0]);
-                    this.getRoutee();
-                    var cleanScreen = () => {
+                        console.log("SNT AICI")
+                        this.locationCoords = [this.view.popup.location.latitude, this.view.popup.location.longitude]
+                        // console.log("mere")
+                        // console.log("acasa")
+                        // console.log(this.center[1], this.center[0])
+                        // console.log("rest")
+                        // console.log(this.locationCoords[1],this.locationCoords[0])
+                        // console.log(this.view.popup.title)
+                        this.restname = this.view.popup.title
                         this.view.graphics.removeAll();
-                        this.view.ui.empty("top-right")
-                        this.view.ui.remove(btn);
-                        //buttonMenu.visible = false;
-                    }
+                        addGraphic("origin", this.center[0], this.center[1]);
+                        addGraphic("destination", this.locationCoords[1], this.locationCoords[0]);
+                        this.getRoutee();
+                        var cleanScreen = () => {
+                            this.view.graphics.removeAll();
+                            this.view.ui.empty("top-right")
+                            this.view.ui.remove(btn);
+                            //buttonMenu.visible = false;
+                        }
 
-                    var reinitMap = () => {
-                        this.view.when(() => {
-                            this.findPlaces(this.view.center);
+                        var reinitMap = () => {
+                            this.view.when(() => {
+                                this.findPlaces(this.view.center);
+                            });
+                            this.view.ui.add(search, "top-right");
+                        }
+                        // const buttonMenu = new this._ButtonMenu ({
+                        //     iconClass: "esri-icon-left",
+                        //     items: [{
+                        //         label: "Stop routing",
+                        //         clickFunction: function (event) {
+                        //             console.log("mere ura")
+                        //             cleanScreen()
+                        //             reinitMap()
+                        //         }
+                        //     }]
+                        // });
+                        //this.view.ui.add(buttonMenu, "top-left");
+
+                        var btn = document.createElement('button');
+                        btn.innerText = 'Stop routing';
+                        btn.style.width = '100px';
+                        btn.style.height = '25px';
+                        btn.style.background = 'white';
+                        btn.style.borderColor = '#009169';
+                        btn.style.border = '5px';
+                        this.view.ui.add(btn, 'bottom-left');
+                        btn.addEventListener('click', () => {
+                            console.log("mere")
+                            cleanScreen()
+                            reinitMap()
+                            this.route = false
                         });
-                        this.view.ui.add(search, "top-right");
                     }
-                    // const buttonMenu = new this._ButtonMenu ({
-                    //     iconClass: "esri-icon-left",
-                    //     items: [{
-                    //         label: "Stop routing",
-                    //         clickFunction: function (event) {
-                    //             console.log("mere ura")
-                    //             cleanScreen()
-                    //             reinitMap()
-                    //         }
-                    //     }]
-                    // });
-                    //this.view.ui.add(buttonMenu, "top-left");
-
-                    var btn = document.createElement('button');
-                    btn.innerText = 'Stop routing';
-                    btn.style.width = '100px';
-                    btn.style.height = '25px';
-                    btn.style.background = 'white';
-                    btn.style.borderColor = '#009169';
-                    btn.style.border = '5px';
-                    this.view.ui.add(btn, 'bottom-left');
-                    btn.addEventListener('click', () => {
-                        console.log("mere")
-                        cleanScreen()
-                        reinitMap()
-                        this.route = false
-                    });
-                }
                 }
                 if (event.action.id === "review-action") {
                     if (this.review == false) {
@@ -330,7 +323,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         }
                         var button = document.createElement('button')
                         button.innerHTML = 'Close';
-                        button.onclick = function() {
+                        button.onclick = function () {
                             console.log('eeee')
                             closeReview()
 
@@ -357,7 +350,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         r1.setAttribute("type", "radio");
                         r1.setAttribute("name", "rating");
                         r1.setAttribute("value", "1");
-                        r1.innerHTML="1"
+                        r1.innerHTML = "1"
 
                         form.appendChild(r1)
                         var l1 = document.createElement("label");
@@ -368,7 +361,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         r2.setAttribute("type", "radio");
                         r2.setAttribute("name", "rating");
                         r2.setAttribute("value", "2");
-                        r2.innerHTML="2"
+                        r2.innerHTML = "2"
 
                         form.appendChild(r2)
                         var l2 = document.createElement("label");
@@ -379,7 +372,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         r3.setAttribute("type", "radio");
                         r3.setAttribute("name", "rating");
                         r3.setAttribute("value", "3");
-                        r3.innerHTML="3"
+                        r3.innerHTML = "3"
 
                         form.appendChild(r3)
                         var l3 = document.createElement("label");
@@ -390,7 +383,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         r4.setAttribute("type", "radio");
                         r4.setAttribute("name", "rating");
                         r4.setAttribute("value", "4");
-                        r4.innerHTML="4"
+                        r4.innerHTML = "4"
 
                         form.appendChild(r4)
                         var l4 = document.createElement("label");
@@ -402,7 +395,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         r5.setAttribute("name", "rating");
                         r5.setAttribute("value", "5");
                         r5.setAttribute("checked", "checked");
-                        r5.innerHTML='5 <br> <br>'
+                        r5.innerHTML = '5 <br> <br>'
 
 
                         form.appendChild(r5)
@@ -413,7 +406,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         var submit = document.createElement("input");
                         submit.setAttribute("type", "submit");
                         submit.setAttribute("value", "Submit");
-                        submit.innerHTML='<br>'
+                        submit.innerHTML = '<br>'
                         form.appendChild(submit);
 
                         var textarea = document.createElement("textarea");
@@ -423,10 +416,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                         textarea.setAttribute("cols", "20");
                         var userIsLogged = this.isLogged;
                         var selectedRestaurant = this.view.popup.title;
-                        submit.addEventListener("click", function(e){
+                        submit.addEventListener("click", function (e) {
                             e.preventDefault();
                             var radios = document.getElementsByName("rating");
-                            var selected_rating:string;
+                            var selected_rating: string;
                             for (var i = 0, length = radios.length; i < length; i++) {
                                 if ((radios[i] as HTMLInputElement).checked) {
                                     // do whatever you want with the checked radio
@@ -439,9 +432,13 @@ export class HomeComponent implements OnInit, OnDestroy {
                             if (!this.isLogged)
                                 alert('You have to be logged in order to add a review')
                             else {
+                                console.log(this.username)
+                                //this.fbs.addReview()
                                 console.log(selected_rating);
                                 console.log(textAreaValue);
                                 console.log(selectedRestaurant);
+
+                                this.fbs.addReview(selectedRestaurant, selected_rating, textAreaValue, this.username);
                             }
                         }.bind(this));
 
@@ -463,12 +460,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                             review.appendChild(buttonReviewBack)
                             review.appendChild(chestionar)
                             review.removeChild(reviewExistente)
-
-
                         }
                         var buttonReview = document.createElement('button')
                         buttonReview.innerText = 'Review';
-                        buttonReview.onclick = function() {
+                        buttonReview.onclick = function () {
                             console.log('eeee')
                             buttonReviewAction()
                             return false
@@ -476,8 +471,14 @@ export class HomeComponent implements OnInit, OnDestroy {
                         review.appendChild(buttonReview)
                         //AICI PUNEM LISTA CU REVIEWURI
                         var reviewExistente = document.createElement('ol');
-                        reviewExistente.innerText = this.view.popup.title;
-                        reviewExistente.innerHTML = "<h1>This is a Heading</h1>";
+                        var nameRes = document.createElement("h1");
+                        nameRes.innerHTML = this.view.popup.title;
+                        reviewExistente.appendChild(nameRes);
+
+                        var reviewsFromDb = await this.fbs.getReviews(this.view.popup.title);
+                        console.log("DASDADAS");
+                        console.log(reviewsFromDb);
+
                         review.appendChild(reviewExistente)
                         var buttonReviewBackAction = () => {
                             review.appendChild(reviewExistente)
@@ -488,7 +489,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         }
                         var buttonReviewBack = document.createElement('button')
                         buttonReviewBack.innerHTML = 'Back to reviews';
-                        buttonReviewBack.onclick = function() {
+                        buttonReviewBack.onclick = function () {
                             buttonReviewBackAction()
                             return false
                         }
@@ -517,11 +518,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     addFeatureLayers() {
         // Trailheads feature layer (points)
-        // const featureLayer = new this._FeatureLayer({
-        //     url:
-        //         "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0"
-        // });
-        // this.map.add(featureLayer);
+        const featureLayer = new this._FeatureLayer({
+            url:
+                "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Urban_Areas/FeatureServer",
+            definitionExpression: "Name = 'Bucharest'",
+        });
+        this.map.add(featureLayer);
 
         // this.map.add(trailheadsLayer);
 
@@ -732,7 +734,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         // });
         //console.log(results);
         const routeAction = {
-
             title: "Find Route",
             id: "route-action",
             icon: 	'<mat-icon> call</mat-icon>'
@@ -748,16 +749,20 @@ export class HomeComponent implements OnInit, OnDestroy {
         };
         this.view.popup.close();
         this.view.graphics.removeAll();
-        results.forEach((result)=>{
-            this.fbs.addRestaurant(
-                result.attributes.City,
-                result.attributes.Country,
-                result.attributes.Phone,
-                result.attributes.PlaceName,
-                result.attributes.Place_addr,
-                result.attributes.Postal,
-                result.attributes.Region,
-                result.attributes.URL)
+        results.forEach(async (result)=>{
+            let res = await firstValueFrom(this.fbs.getRestaurant(result.attributes.PlaceName).valueChanges());
+            if (res == null || res == undefined) {
+                console.log("Am adaugat", result.attributes.PlaceName);
+                this.fbs.addRestaurant(
+                    result.attributes.City,
+                    result.attributes.Country,
+                    result.attributes.Phone,
+                    result.attributes.PlaceName,
+                    result.attributes.Place_addr,
+                    result.attributes.Postal,
+                    result.attributes.Region,
+                    result.attributes.URL);
+            }
             this.view.graphics.add(
                 new this._Graphic({
                     attributes: result.attributes,

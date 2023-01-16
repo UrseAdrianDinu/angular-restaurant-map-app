@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable } from 'rxjs';
+import {push, set} from "@angular/fire/database";
 
 export interface IUser {
     email: string,
@@ -20,6 +21,12 @@ export interface IRestaurant {
     postal: string,
     region:string,
     url:string,
+}
+
+export interface IReview {
+    rating: number,
+    comment:string,
+    username:string,
 }
 
 @Injectable()
@@ -104,6 +111,36 @@ export class FirebaseService {
         };
         let key = placeName.replace(/\s/g, "");
         this.db.database.ref('restaurants/' + key).set(restaurant).then(r => console.log("Restaurant added!"));
+    }
+
+    getRestaurant(name:string) {
+        let key = name.replace(/\s/g, "");
+        return this.db.object('restaurants/' + key);
+    }
+
+    addReview(
+        restaurant:string,
+        rating: number,
+        comment:string,
+        username:string) {
+
+        let review: IReview = {
+            rating: rating,
+            comment: comment,
+            username: username,
+        };
+
+        let key = restaurant.replace(/\s/g, "");
+
+        const revlist = this.db.database.ref('restaurants/' + key +'/reviews');
+        const newRevRef = push(revlist);
+        set(newRevRef, review).then(r => console.log("Review added"));
+    }
+
+    getReviews(restaurant:string) {
+        let key = restaurant.replace(/\s/g, "");
+        return this.db.list('restaurants/' + key +'/reviews').valueChanges();
+
     }
 
 }
