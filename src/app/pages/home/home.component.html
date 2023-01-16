@@ -15,6 +15,9 @@
   <div *ngIf="isLogged" class="item item-1 logged-user" fxFlex="20%">
     Logged as {{username}}
   </div>
+  <div *ngIf="isLogged" fxLayout="column" class="item item-2" fxFlex="10%" fxFlexOrder="3" fxLayoutGap="2px">
+    <button mat-raised-button fxFlex="100%" class="logout" (click)="logOut()">Log out</button>
+  </div>
 
   <div *ngIf="!isLogged" fxFlex="10%" style="color: #009169; background-color: #009169">
     <form (ngSubmit)="onSubmit()" fxLayout="column" style="height: 100%; width: 98%;">

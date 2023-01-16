@@ -948,7 +948,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
         this.stopTimer();
     }
-
+    async logOut() {
+        this.isLogged=false;
+    }
     async onSubmit() {
         if (!this.username && this.password) {
             alert("Username not provided")
