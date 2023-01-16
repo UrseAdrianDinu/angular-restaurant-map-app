@@ -11,7 +11,7 @@ import {
 import { setDefaultOptions, loadModules } from 'esri-loader';
 import esri = __esri; // Esri TypeScript Types
 import {firstValueFrom, Observable, Subscription} from "rxjs";
-import { FirebaseService, IUser } from "src/app/services/database/firebase";
+import {FirebaseService, IReview, IUser} from "src/app/services/database/firebase";
 import {GeolocationService} from '@ng-web-apis/geolocation';
 import { FirebaseMockService } from "src/app/services/database/firebase-mock";
 import DirectionsViewModel = __esri.DirectionsViewModel;
@@ -474,11 +474,35 @@ export class HomeComponent implements OnInit, OnDestroy {
                         var nameRes = document.createElement("h1");
                         nameRes.innerHTML = this.view.popup.title;
                         reviewExistente.appendChild(nameRes);
-
-                        var reviewsFromDb = await this.fbs.getReviews(this.view.popup.title);
+                        var reviewsFromDb = await firstValueFrom(this.fbs.getReviews(this.view.popup.title));
                         console.log("DASDADAS");
                         console.log(reviewsFromDb);
+                        var sum:number = 0;
+                        reviewsFromDb.forEach((rev:IReview) => {
+                            console.log(rev.rating);
+                            console.log(rev.comment);
+                            console.log(rev.username);
+                            sum += +rev.rating;
+                        });
+                        var ratingRes = document.createElement("label");
+                        ratingRes.innerHTML = "Rating: "  + sum/reviewsFromDb.length;
+                        reviewExistente.appendChild(ratingRes);
 
+                        reviewsFromDb.forEach((rev:IReview) => {
+                            var usernameRev = document.createElement("div");
+                            usernameRev.innerHTML = "Username: "  + rev.username;
+                            var ratingRev = document.createElement("div");
+                            ratingRev.innerHTML = "Rating: "  + rev.rating;
+                            reviewExistente.appendChild(usernameRev);
+                            reviewExistente.appendChild(ratingRev);
+                            if (rev.comment)
+                            {
+                                var textRev = document.createElement("div");
+                                textRev.innerHTML =  rev.comment;
+                                reviewExistente.appendChild(textRev);
+                            }
+                        });
+                        //console.log((reviewsFromDb[0] as IReview).rating);
                         review.appendChild(reviewExistente)
                         var buttonReviewBackAction = () => {
                             review.appendChild(reviewExistente)
@@ -523,7 +547,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                 "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Urban_Areas/FeatureServer",
             definitionExpression: "Name = 'Bucharest'",
         });
+        featureLayer.opacity=0.5;
         this.map.add(featureLayer);
+
 
         // this.map.add(trailheadsLayer);
 
