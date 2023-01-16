@@ -55,14 +55,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     pointGraphic: esri.Graphic;
     graphicsLayer: esri.GraphicsLayer;
 
-    isLogged = false;
+    isLogged: boolean = false;
 
     username: any;
 
     password:any;
 
     // Attributes
-    zoom = 5;
+    zoom = 11;
     center: Array<number> = [26.1025, 44.4268];
     basemap = "streets-vector";
     loaded = false;
@@ -434,14 +434,14 @@ export class HomeComponent implements OnInit, OnDestroy {
                                 }
                             }
                             var textAreaValue = (document.getElementsByName("comment")[0] as HTMLInputElement).value;
-                            if (!userIsLogged)
+                            if (!this.isLogged)
                                 alert('You have to be logged in order to add a review')
                             else {
                                 console.log(selected_rating);
                                 console.log(textAreaValue);
                                 console.log(selectedRestaurant);
                             }
-                        });
+                        }.bind(this));
 
                         // chestionar.innerHTML =
                         //     '<h1>Restaurant Review </h1>' +
@@ -475,6 +475,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         //AICI PUNEM LISTA CU REVIEWURI
                         var reviewExistente = document.createElement('ol');
                         reviewExistente.innerText = this.view.popup.title;
+                        reviewExistente.innerHTML = "<h1>This is a Heading</h1>";
                         review.appendChild(reviewExistente)
                         var buttonReviewBackAction = () => {
                             review.appendChild(reviewExistente)
@@ -514,11 +515,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     addFeatureLayers() {
         // Trailheads feature layer (points)
-        const featureLayer = new this._FeatureLayer({
-            url:
-                "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0"
-        });
-        this.map.add(featureLayer);
+        // const featureLayer = new this._FeatureLayer({
+        //     url:
+        //         "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0"
+        // });
+        // this.map.add(featureLayer);
 
         // this.map.add(trailheadsLayer);
 
@@ -934,4 +935,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
 
     }
+
+
 }
