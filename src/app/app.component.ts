@@ -12,7 +12,7 @@ export class AppComponent {
   // Set our map properties
   mapCenter = [26.1025, 44.4268];
   basemapType = 'satellite';
-  mapZoomLevel = 12;
+  mapZoomLevel = 2;
   isLogged = false;
 
   constructor(private router: Router) { }

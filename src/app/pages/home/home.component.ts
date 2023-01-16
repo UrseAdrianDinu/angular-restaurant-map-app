@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     password:any;
 
     // Attributes
-    zoom = 10;
+    zoom = 5;
     center: Array<number> = [26.1025, 44.4268];
     basemap = "streets-vector";
     loaded = false;
@@ -83,6 +83,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     isConnected: boolean = false;
     subscriptionList: Subscription;
     subscriptionObj: Subscription;
+
+    comment:String;
 
     constructor(
         private fbs: FirebaseService,
@@ -239,6 +241,12 @@ export class HomeComponent implements OnInit, OnDestroy {
             console.log(this.view.center);
 
 
+            const featureLayer = new this._FeatureLayer({
+                url:
+                    "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0"
+            });
+            this.map.add(featureLayer);
+
 
 
             // Event handler that fires each time an action is clicked.
@@ -335,21 +343,120 @@ export class HomeComponent implements OnInit, OnDestroy {
                         review.style.background = 'white';
                         review.appendChild(button)
                         var chestionar = document.createElement('ol');
-                        chestionar.innerHTML =
-                        '<body>' +
-                            '<h1>Restaurant Review </h1>' +
-                        '<form action="/submit-review" method="post">' +
-                            '<label for="rating">Overall Rating:</label><br>' +
-                        '<input type="radio" name="rating" value="1"> 1<br>' +
-                        '<input type="radio" name="rating" value="2"> 2<br>' +
-                        '<input type="radio" name="rating" value="3"> 3<br>' +
-                        '<input type="radio" name="rating" value="4"> 4<br>' +
-                        '<input type="radio" name="rating" value="5"> 5<br>' +
-                            '<label for="comments">Comments:</label><br>' +
-                        '<textarea name="comments" rows="5" cols="20"></textarea><br>' +
-                            '<input type="submit" value="Submit">' +
-                            '</form>' +
-                            '</body>';
+                        var form = document.createElement("form");
+                        var h1_res_rev = document.createElement("h1");
+                        h1_res_rev.innerHTML = "Restaurant Review";
+                        var form_rating = document.createElement("label");
+                        form_rating.innerHTML = 'Overall Rating: <br>';
+                        form.appendChild(h1_res_rev)
+                        form.appendChild(form_rating)
+
+                        var r1 = document.createElement('input');
+                        r1.setAttribute("type", "radio");
+                        r1.setAttribute("name", "rating");
+                        r1.setAttribute("value", "1");
+                        r1.innerHTML="1"
+
+                        form.appendChild(r1)
+                        var l1 = document.createElement("label");
+                        l1.innerHTML = '1 <br>';
+                        form.appendChild(l1);
+
+                        var r2 = document.createElement('input');
+                        r2.setAttribute("type", "radio");
+                        r2.setAttribute("name", "rating");
+                        r2.setAttribute("value", "2");
+                        r2.innerHTML="2"
+
+                        form.appendChild(r2)
+                        var l2 = document.createElement("label");
+                        l2.innerHTML = '2 <br>';
+                        form.appendChild(l2);
+
+                        var r3 = document.createElement('input');
+                        r3.setAttribute("type", "radio");
+                        r3.setAttribute("name", "rating");
+                        r3.setAttribute("value", "3");
+                        r3.innerHTML="3"
+
+                        form.appendChild(r3)
+                        var l3 = document.createElement("label");
+                        l3.innerHTML = '3 <br>';
+                        form.appendChild(l3);
+
+                        var r4 = document.createElement('input');
+                        r4.setAttribute("type", "radio");
+                        r4.setAttribute("name", "rating");
+                        r4.setAttribute("value", "4");
+                        r4.innerHTML="4"
+
+                        form.appendChild(r4)
+                        var l4 = document.createElement("label");
+                        l4.innerHTML = '4 <br>';
+                        form.appendChild(l4);
+
+                        var r5 = document.createElement('input');
+                        r5.setAttribute("type", "radio");
+                        r5.setAttribute("name", "rating");
+                        r5.setAttribute("value", "5");
+                        r5.setAttribute("checked", "checked");
+                        r5.innerHTML='5 <br> <br>'
+
+
+                        form.appendChild(r5)
+                        var l5 = document.createElement("label");
+                        l5.innerHTML = "5 <br>";
+                        form.appendChild(l5);
+
+                        var submit = document.createElement("input");
+                        submit.setAttribute("type", "submit");
+                        submit.setAttribute("value", "Submit");
+                        submit.innerHTML='<br>'
+                        form.appendChild(submit);
+
+                        var textarea = document.createElement("textarea");
+                        textarea.setAttribute("name", "comment");
+                        form.appendChild(textarea);
+                        textarea.setAttribute("rows", "5");
+                        textarea.setAttribute("cols", "20");
+                        var userIsLogged = this.isLogged;
+                        var selectedRestaurant = this.view.popup.title;
+                        submit.addEventListener("click", function(e){
+                            e.preventDefault();
+                            var radios = document.getElementsByName("rating");
+                            var selected_rating:string;
+                            for (var i = 0, length = radios.length; i < length; i++) {
+                                if ((radios[i] as HTMLInputElement).checked) {
+                                    // do whatever you want with the checked radio
+                                    selected_rating = (radios[i] as HTMLInputElement).value
+                                    // only one radio can be logically checked, don't check the rest
+                                    break;
+                                }
+                            }
+                            var textAreaValue = (document.getElementsByName("comment")[0] as HTMLInputElement).value;
+                            if (!userIsLogged)
+                                alert('You have to be logged in order to add a review')
+                            else {
+                                console.log(selected_rating);
+                                console.log(textAreaValue);
+                                console.log(selectedRestaurant);
+                            }
+                        });
+
+                        // chestionar.innerHTML =
+                        //     '<h1>Restaurant Review </h1>' +
+                        //     '<form action="/submit-review" method="post">' x`+
+                        //     '<label for="rating">Overall Rating:</label><br>' +
+                        //     '<input type="radio" name="rating" value="1" class="radioInput"> 1<br>' +
+                        //     '<input type="radio" name="rating" value="2" class="radioInput"> 2<br>' +
+                        //     '<input type="radio" name="rating" value="3" class="radioInput"> 3<br>' +
+                        //     '<input type="radio" name="rating" value="4" class="radioInput"> 4<br>' +
+                        //     '<input type="radio" name="rating" value="5" class="radioInput"> 5<br>' +
+                        //     '<label for="comments">Comments:</label><br>' +
+                        //     '<textarea name="comments" [ngModel]="comment" rows="5" cols="20"></textarea><br>' +
+                        //     '<input type="submit" value="Submit" (click)="{{submitReview()}}">' +
+                        //     '</form>';
+                        chestionar.appendChild(form);
                         var buttonReviewAction = () => {
                             review.appendChild(buttonReviewBack)
                             review.appendChild(chestionar)
@@ -404,12 +511,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
     }
 
+
     addFeatureLayers() {
         // Trailheads feature layer (points)
-        // var trailheadsLayer: __esri.FeatureLayer = new this._FeatureLayer({
-        //   url:
-        //     "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0"
-        // });
+        const featureLayer = new this._FeatureLayer({
+            url:
+                "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0"
+        });
+        this.map.add(featureLayer);
 
         // this.map.add(trailheadsLayer);
 
@@ -618,7 +727,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         //     this.locationCoords = [event.mapPoint.latitude, event.mapPoint.longitude];
         //
         // });
-        console.log(results);
+        //console.log(results);
         const routeAction = {
 
             title: "Find Route",
@@ -637,7 +746,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.view.popup.close();
         this.view.graphics.removeAll();
         results.forEach((result)=>{
-
+            this.fbs.addRestaurant(
+                result.attributes.City,
+                result.attributes.Country,
+                result.attributes.Phone,
+                result.attributes.PlaceName,
+                result.attributes.Place_addr,
+                result.attributes.Postal,
+                result.attributes.Region,
+                result.attributes.URL)
             this.view.graphics.add(
                 new this._Graphic({
                     attributes: result.attributes,
@@ -677,7 +794,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         const params = {
             categories: ["Italian Food"],
             location: pt,  // Paris (2.34602,48.85880)
-            outFields: ["PlaceName","Place_addr", "Phone", "URL", "City","Region", "Rank", "Postal", "Country", "Distance"]
+            outFields: ["PlaceName","Place_addr", "Phone", "URL", "City","Region", "Rank", "Postal", "Country", "Distance"],
+            distance: 1000,
+            maxLocations:100,
         }
 
         this._locator.addressToLocations(geocodingServiceUrl, params).then((results)=> {

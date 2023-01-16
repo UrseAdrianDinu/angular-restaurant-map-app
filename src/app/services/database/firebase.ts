@@ -11,6 +11,17 @@ export interface IUser {
     password: string
 }
 
+export interface IRestaurant {
+    city: string,
+    country: string,
+    phone: string,
+    placeName: string,
+    placeAddr: string,
+    postal: string,
+    region:string,
+    url:string,
+}
+
 @Injectable()
 export class FirebaseService {
 
@@ -73,5 +84,26 @@ export class FirebaseService {
         return this.db.object('users/' + username);
     }
 
+    addRestaurant( city: string,
+                   country: string,
+                   phone: string,
+                   placeName: string,
+                   placeAddr: string,
+                   postal: string,
+                   region:string,
+                   url:string) {
+        let restaurant: IRestaurant = {
+            city: city,
+            country: country,
+            phone: phone,
+            placeName: placeName,
+            placeAddr: placeAddr,
+            postal: postal,
+            region:region,
+            url:url
+        };
+        let key = placeName.replace(/\s/g, "");
+        this.db.database.ref('restaurants/' + key).set(restaurant).then(r => console.log("Restaurant added!"));
+    }
 
 }
