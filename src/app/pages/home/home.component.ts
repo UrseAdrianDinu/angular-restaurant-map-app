@@ -280,7 +280,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.view.when(() => {
                             this.findPlaces(this.view.center);
                         });
-                      //  this.view.ui.add(track, "top-right");
+                        this.view.ui.add(search, "top-right");
                     }
                     // const buttonMenu = new this._ButtonMenu ({
                     //     iconClass: "esri-icon-left",
@@ -325,6 +325,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                                 this.findPlaces(this.view.center);
                             });
                             this.review = false
+                            this.view.ui.add(search, "top-right");
 
                         }
                         var button = document.createElement('button')
@@ -332,6 +333,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         button.onclick = function() {
                             console.log('eeee')
                             closeReview()
+
                             return false
                         }
 
