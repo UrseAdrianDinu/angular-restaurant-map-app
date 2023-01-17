@@ -484,9 +484,15 @@ export class HomeComponent implements OnInit, OnDestroy {
                             console.log(rev.username);
                             sum += +rev.rating;
                         });
-                        var ratingRes = document.createElement("label");
-                        ratingRes.innerHTML = "Rating: "  + sum/reviewsFromDb.length;
-                        reviewExistente.appendChild(ratingRes);
+                        if (sum != 0) {
+                            var ratingRes = document.createElement("label");
+                            ratingRes.innerHTML = "Rating: "  + sum/reviewsFromDb.length;
+                            reviewExistente.appendChild(ratingRes);
+                        } else {
+                            var ratingRes = document.createElement("label");
+                            ratingRes.innerHTML = "No reviews";
+                            reviewExistente.appendChild(ratingRes);
+                        }
 
                         reviewsFromDb.forEach((rev:IReview) => {
                             var usernameRev = document.createElement("div");
