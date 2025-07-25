@@ -1,14 +1,14 @@
-# angular-cli-esri-map
-Based on angular-cli-esri-map
+# Italian Restaurant Map 🗺️🍝
 
-## Licensing
+An Angular web application that uses ArcGIS to display Italian restaurants on an interactive map. Users can view restaurant locations, explore reviews, and get helpful info in a simple, user-friendly interface.
 
-Copyright 2020 Esri
+## Features
+- 📍 Map of Italian restaurants using ArcGIS
+- ⭐ User reviews and ratings
+- 🔎 Interactive and responsive UI built with Angular
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
-
-[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
-A copy of the license is available in the repository's license.txt file.
+## Tech Stack
+- Angular
+- ArcGIS JavaScript API
+- TypeScript
+- HTML/CSS
