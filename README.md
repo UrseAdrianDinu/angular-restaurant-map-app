@@ -12,3 +12,4 @@ An Angular web application that uses ArcGIS to display Italian restaurants on an
 - ArcGIS JavaScript API
 - TypeScript
 - HTML/CSS
+- Firebase Database
